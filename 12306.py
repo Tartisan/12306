@@ -174,13 +174,14 @@ def buyTicket():
     data = urllib.parse.urlencode(data).encode('utf-8')
     html = opener.open(req, data=data).read().decode('utf-8')
     print(html)
-
+    
+    # 下单第二个请求
     req = urllib.request.Request(submitOrderRequest_url)
     req.headers = headers
     data = {
-        'secretStr': tempList[0],
+        'secretStr': urllib.parse.unquote(tempList[0]),
         'train_date': train_date,
-        'back_train_date': '2018-04-03',
+        'back_train_date': train_date,
         'tour_flag': 'dc',
         'purpose_codes': 'ADULT',
         'query_from_station_name': fromStation,
@@ -189,7 +190,15 @@ def buyTicket():
     }
     data = urllib.parse.urlencode(data).encode('utf-8')
     html = opener.open(req, data=data).read().decode('utf-8')
-    # print(html)
+    print(html)
+    # 第三个请求
+    req = urllib.request.Request('')
+    req.headers = headers
+    data = {
+        ''
+    }
+    data = urllib.parse.urlencode(data).encode('utf-8')
+    html = opener.open(req, data=data).read().decode('utf-8')
 
 if __name__ == '__main__':
     login()
