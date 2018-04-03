@@ -191,15 +191,29 @@ def buyTicket():
     data = urllib.parse.urlencode(data).encode('utf-8')
     html = opener.open(req, data=data).read().decode('utf-8')
     print(html)
-    # 第三个请求
-    req = urllib.request.Request('')
+
+    # 下单第三个请求
+    req = urllib.request.Request('https://kyfw.12306.cn/otn/confirmPassenger/initDc')
     req.headers = headers
     data = {
-        ''
+        '_json_att': ''
+    }
+    data = urllib.parse.urlencode(data).encode('utf-8')
+    html = opener.open(req, data=data).read().decode('utf-8')
+    globalRepeatSubmitToken = re.findall(r"globalRepeatSubmitToken = '(.*?)'",html)[0]
+    print(globalRepeatSubmitToken)
+    print('1001', globalRepeatSubmitToken)
+    
+    # 下单第四个请求
+    req = urllib.request.Request('https://kyfw.12306.cn/otn/confirmPassenger/getPassengerDTOs')
+    req.headers = headers
+    data = {
+        '_json_att': '',
+        'REPEAT_SUBMIT_TOKEN': globalRepeatSubmitToken
     }
     data = urllib.parse.urlencode(data).encode('utf-8')
     html = opener.open(req, data=data).read().decode('utf-8')
 
 if __name__ == '__main__':
-    login()
+    leftTicket()
     buyTicket()
