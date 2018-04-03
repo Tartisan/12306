@@ -215,5 +215,6 @@ def buyTicket():
     html = opener.open(req, data=data).read().decode('utf-8')
 
 if __name__ == '__main__':
+    # 遗留问题：tempList 没有执行
     leftTicket()
     buyTicket()
