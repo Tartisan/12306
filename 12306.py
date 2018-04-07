@@ -6,11 +6,18 @@ import urllib.request
 import urllib.parse
 import ssl
 import http.cookiejar
-from json import loads
-from userInit import userName, pwd
-from info import station_names
-from time import sleep
 import re
+import json
+from time import sleep
+# from userInit import userName, pwd
+# from info import station_names
+
+# 打开配置参数文件
+with open("initPar.json") as initPar:
+    data = json.load(initPar)
+    userName = data['userName']
+    pwd = data['pwd']
+    station_names = data['station_names']
 
 stationDict = {}
 for i in station_names.split('@')[1:]:
@@ -78,7 +85,7 @@ def login():
     }
     data = urllib.parse.urlencode(data).encode('utf-8')
     html = opener.open(req, data=data).read().decode('utf-8')
-    result = loads(html)
+    result = json.loads(html)
     if result['result_code'] == 0:
         # 继续POST请求
         req = urllib.request.Request(userLogin_url)
@@ -106,7 +113,7 @@ def login():
         }
         data = urllib.parse.urlencode(data).encode('utf-8')
         html = opener.open(req, data=data).read().decode('utf-8')
-        result = loads(html)
+        result = json.loads(html)
         tk = result['newapptk']
         # 继续POST请求
         req = urllib.request.Request(
@@ -132,7 +139,7 @@ def leftTicket():
     )
     req.headers = headers
     html = opener.open(req).read().decode('utf-8')
-    result = loads(html)
+    result = json.loads(html)
     # print('1002', result)
     return result['data']['result']
 
