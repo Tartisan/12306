@@ -9,8 +9,6 @@ import http.cookiejar
 import re
 import json
 from time import sleep
-# from userInit import userName, pwd
-# from info import station_names
 
 # 打开配置参数文件
 with open("initPar.json") as initPar:
@@ -41,14 +39,14 @@ headers = {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36'
 }
 
-# 网址
-imgCode_url = 'https://kyfw.12306.cn/passport/captcha/captcha-image?login_site=E&module=login&rand=sjrand&0.9004386406168825'
-captcha_check_url = 'https://kyfw.12306.cn/passport/captcha/captcha-check'
-webLogin_url = 'https://kyfw.12306.cn/passport/web/login'
-userLogin_url = 'https://kyfw.12306.cn/otn/login/userLogin'
-leftTicket_url = 'https://kyfw.12306.cn/otn/leftTicket/queryO?leftTicketDTO.train_date=%s&leftTicketDTO.from_station=%s&leftTicketDTO.to_station=%s&purpose_codes=ADULT' % (train_date, from_station, to_station)
-checkUser_url = 'https://kyfw.12306.cn/otn/login/checkUser'
-submitOrderRequest_url = 'https://kyfw.12306.cn/otn/leftTicket/submitOrderRequest'
+# # 网址
+# imgCode_url = 'https://kyfw.12306.cn/passport/captcha/captcha-image?login_site=E&module=login&rand=sjrand&0.9004386406168825'
+# captcha_check_url = 'https://kyfw.12306.cn/passport/captcha/captcha-check'
+# webLogin_url = 'https://kyfw.12306.cn/passport/web/login'
+# userLogin_url = 'https://kyfw.12306.cn/otn/login/userLogin'
+# leftTicket_url = 'https://kyfw.12306.cn/otn/leftTicket/queryO?leftTicketDTO.train_date=%s&leftTicketDTO.from_station=%s&leftTicketDTO.to_station=%s&purpose_codes=ADULT' % (train_date, from_station, to_station)
+# checkUser_url = 'https://kyfw.12306.cn/otn/login/checkUser'
+# submitOrderRequest_url = 'https://kyfw.12306.cn/otn/leftTicket/submitOrderRequest'
 
 # ssl
 ssl._create_default_https_context = ssl._create_unverified_context
@@ -57,14 +55,18 @@ ssl._create_default_https_context = ssl._create_unverified_context
 def login():
     # 获取验证码图片
     print('正在获取验证码')
-    req = urllib.request.Request(imgCode_url)
+    req = urllib.request.Request(
+        'https://kyfw.12306.cn/passport/captcha/captcha-image?login_site=E&module=login&rand=sjrand&0.9004386406168825'
+        )
     req.headers = headers
     imgCode = opener.open(req).read()
     with open('code.png', 'wb') as fn:
         fn.write(imgCode)
 
     # 验证码请求
-    req = urllib.request.Request(captcha_check_url)
+    req = urllib.request.Request(
+        'https://kyfw.12306.cn/passport/captcha/captcha-check'
+    )
     req.headers = headers
     code = input('请输入验证码： ')
     print('正在识别验证码')
@@ -76,7 +78,9 @@ def login():
     data = urllib.parse.urlencode(data).encode('utf-8')  # 转化为查询字符串
     html = opener.open(req, data=data).read().decode('utf-8')
     # 用户名、密码请求
-    req = urllib.request.Request(webLogin_url)
+    req = urllib.request.Request(
+        'https://kyfw.12306.cn/passport/web/login'
+        )
     req.headers = headers
     data = {
         'username': userName,
@@ -88,7 +92,9 @@ def login():
     result = json.loads(html)
     if result['result_code'] == 0:
         # 继续POST请求
-        req = urllib.request.Request(userLogin_url)
+        req = urllib.request.Request(
+            'https://kyfw.12306.cn/otn/login/userLogin'
+            )
         req.headers = headers
         data = {
             '_json_att': ''
@@ -125,7 +131,7 @@ def login():
         }
         data = urllib.parse.urlencode(data).encode('utf-8')
         html = opener.open(req, data=data).read().decode('utf-8')
-        # print('1001', html)
+        print('1001', html)
         return True
     else:
         print('登陆失败，正在重新登陆')
@@ -135,7 +141,7 @@ def login():
 # 余票查询
 def leftTicket():
     req = urllib.request.Request(
-        leftTicket_url
+        'https://kyfw.12306.cn/otn/leftTicket/queryO?leftTicketDTO.train_date=%s&leftTicketDTO.from_station=%s&leftTicketDTO.to_station=%s&purpose_codes=ADULT' % (train_date, from_station, to_station)
     )
     req.headers = headers
     html = opener.open(req).read().decode('utf-8')
@@ -146,7 +152,9 @@ def leftTicket():
 # 买票
 def buyTicket():
     # 下单第一个请求
-    req = urllib.request.Request(checkUser_url)
+    req = urllib.request.Request(
+        'https://kyfw.12306.cn/otn/login/checkUser'
+    )
     req.headers = headers
     data = {
         '_json_att':''
@@ -156,7 +164,9 @@ def buyTicket():
     # print('1003', html)
     
     # 下单第二个请求
-    req = urllib.request.Request(submitOrderRequest_url)
+    req = urllib.request.Request(
+        'https://kyfw.12306.cn/otn/leftTicket/submitOrderRequest'
+        )
     req.headers = headers
     data = {
         'secretStr': urllib.parse.unquote(tempList[0]),
